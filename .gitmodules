@@ -1,0 +1,3 @@
+[submodule "MS17-010"]
+	path = MS17-010
+	url = https://github.com/worawit/MS17-010
