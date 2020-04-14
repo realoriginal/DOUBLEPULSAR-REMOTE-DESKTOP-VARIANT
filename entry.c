@@ -32,11 +32,11 @@ BOOL c_EntryPoint( VOID )
 
 	if ( ( pNtosKrnl != NULL ) && ( pRdpwdSys != NULL ) )
 	{
-		ULONG  SectionOffset     = 0;
-		ULONG  SectionLength     = 0;
-		PVOID *SectionBegPointer = NULL;
-		PVOID *DispachTableEntry = NULL;
-		PVOID  SectionEndPointer = NULL;
+		ULONG  SectionOffset      = 0;
+		ULONG  SectionLength      = 0;
+		PVOID *SectionBegPointer  = NULL;
+		PVOID *DispatchTableEntry = NULL;
+		PVOID  SectionEndPointer  = NULL;
 
 		SectionOffset     = GetPeSectOffset( pRdpwdSys, H_RDATA, & SectionLength );
 		SectionBegPointer = ( PVOID )( PTR_V( pRdpwdSys ) + SectionOffset );
@@ -49,8 +49,8 @@ BOOL c_EntryPoint( VOID )
 			     ( PTR_V( SectionBegPointer[1] )  < PTR_V( SectionEndPointer ) )    &&
 			     ( PTR_V( SectionBegPointer[2] ) != PTR_V( SectionBegPointer[3] ) ) &&
 			     ( PTR_V( SectionBegPointer[4] ) == PTR_V( SectionBegPointer[5] ) )
-			   ) { DispatchTableEntry = SectionBegPointer; break };
-		} while ( SectionLength-- != 0 );
+			   ) { DispatchTableEntry = SectionBegPointer; break; };
+		} while ( SectionLength-- != 0 && SectionBegPointer++ );
 	};
 
 	return TRUE;
