@@ -19,3 +19,4 @@
 #pragma once 
 
 LPVOID GetPeExport( IN LPVOID DriverBase, IN DWORD ExportHash );
+DWORD GetPeSectOffset( IN LPVOID DriverBase, IN DWORD SectionHash, OUT PULONG Length );

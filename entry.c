@@ -23,10 +23,24 @@
 
 #define H_NTOSKRNL 0x815d3210
 #define H_RDPWD    0x8b39664d
+#define H_RDATA    0x38b2f949
 
 BOOL c_EntryPoint( VOID )
 {
-	ULONG_PTR pNtosKrnl = ( ULONG_PTR ) KeGetDriverBase( H_NTOSKRNL );
-	ULONG_PTR pRdpwdSys = ( ULONG_PTR ) KeGetDriverBase( H_RDPWD );
+	LPVOID pNtosKrnl = ( LPVOID ) KeGetDriverBase( H_NTOSKRNL );
+	LPVOID pRdpwdSys = ( LPVOID ) KeGetDriverBase( H_RDPWD );
+
+	if ( ( pNtosKrnl != NULL ) && ( pRdpwdSys != NULL ) )
+	{
+		ULONG SectionOffset     = 0;
+		ULONG SectionLength     = 0;
+		PVOID SectionBegPointer = NULL;
+		PVOID SectionEndPointer = NULL;
+
+		SectionOffset     = GetPeSectOffset( pRdpwdSys, H_RDATA, & SectionLength );
+		SectionBegPointer = ( PVOID )( PTR_V( pRdpwdSys ) + SectionOffset );
+		SectionEndPointer = ( PVOID )( PTR_V( pRdpwdSys ) + SectionOffset + SectionLength );
+	};
+
 	return TRUE;
 };

@@ -50,3 +50,22 @@ LPVOID GetPeExport( IN LPVOID DriverBase, IN DWORD ExportHash )
 	};
 	return NULL;
 };
+
+DWORD GetPeSectOffset( IN LPVOID DriverBase, IN DWORD SectionHash, OUT PULONG Length )
+{
+	PIMAGE_NT_HEADERS     NtHeader   = NULL;
+	PIMAGE_SECTION_HEADER SectHeader = NULL;
+	ULONG                 LoopIndex  = 0;
+
+	NtHeader = ( PIMAGE_NT_HEADERS ) ( ((PIMAGE_DOS_HEADER)DriverBase)->e_lfanew + PTR_V( DriverBase ) );
+
+	SectHeader = IMAGE_FIRST_SECTION( NtHeader );
+	for ( LoopIndex = 0 ; LoopIndex < NtHeader->FileHeader.NumberOfSections ; ++LoopIndex ) {
+		if ( GetStringHash( (PCHAR)&SectHeader[LoopIndex].Name, 0 ) == SectionHash ) {
+			*Length = SectHeader[LoopIndex].Misc.VirtualSize;
+			return SectHeader[LoopIndex].VirtualAddress;
+		};
+	};
+	*Length = 0;
+	return 0;
+};
